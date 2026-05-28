@@ -1,0 +1,21 @@
+; Engine Lab — Godot 4 Demo Project
+; Open this file in Godot 4.x to load the project.
+
+[gd_resource type="PackedScene"]
+
+[application]
+config/name="EngineLabPlatformer"
+config/version="1.0"
+run/main_scene="res://Main.tscn"
+config/features=PackedStringArray("4.2", "Forward Plus")
+
+[display]
+window/size/viewport_width=640
+window/size/viewport_height=400
+window/stretch/mode="canvas_items"
+
+[physics]
+2d/default_gravity=980
+
+[rendering]
+renderer/rendering_method="gl_compatibility"

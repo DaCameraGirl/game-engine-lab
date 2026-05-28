@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Engine Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #0d0d18;
+    --cyan: #00f5ff;
+    --magenta: #ff00aa;
+    --green: #00ff88;
+    --yellow: #ffee00;
+    --dim: #1a1a2e;
+    --text: #c8ccd4;
+    --text-dim: #5a5f70;
+    --card-bg: #0f0f1c;
+    --glow-cyan: 0 0 20px rgba(0,245,255,0.4), 0 0 60px rgba(0,245,255,0.15);
+    --glow-magenta: 0 0 20px rgba(255,0,170,0.4), 0 0 60px rgba(255,0,170,0.15);
+    --glow-green: 0 0 20px rgba(0,255,136,0.4), 0 0 60px rgba(0,255,136,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* ── SCANLINE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  #grid-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .hero-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--cyan);
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: fadeSlideDown 0.8s ease both;
+  }
+
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    animation: fadeSlideUp 0.8s 0.2s ease both;
+  }
+
+  h1 .line1 { color: #fff; display: block; }
+  h1 .line2 {
+    display: block;
+    background: linear-gradient(90deg, var(--cyan), var(--magenta));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--text-dim);
+    margin-top: 1.5rem;
+    letter-spacing: 0.1em;
+    animation: fadeSlideUp 0.8s 0.4s ease both;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2.5rem;
+    animation: fadeSlideUp 0.8s 0.6s ease both;
+  }
+
+  .btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.75rem 2rem;
+    border: 1px solid;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-cyan {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  .btn-cyan:hover {
+    background: var(--cyan);
+    color: var(--bg);
+    box-shadow: var(--glow-cyan);
+  }
+
+  .btn-magenta {
+    border-color: var(--magenta);
+    color: var(--magenta);
+  }
+  .btn-magenta:hover {
+    background: var(--magenta);
+    color: var(--bg);
+    box-shadow: var(--glow-magenta);
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.3em;
+    animation: pulse 2s infinite;
+    z-index: 2;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0,245,255,0.1);
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--cyan);
+    letter-spacing: 0.1em;
+  }
+
+  .nav-logo span { color: var(--magenta); }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--cyan); }
+
+  /* ── SECTIONS ── */
+  section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+  }
+
+  .section-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--magenta);
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+
+  .section-desc {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    max-width: 600px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+  }
+
+  /* ── ENGINE CARDS ── */
+  .engine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .engine-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+    cursor: pointer;
+  }
+
+  .engine-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 20px var(--accent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .engine-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+  }
+
+  .engine-card:hover::before { opacity: 1; }
+
+  .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .card-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-tagline {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .badge-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  .badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .badge-lang {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.08);
+  }
+
+  .badge-easy { border-color: var(--green); color: var(--green); }
+  .badge-medium { border-color: var(--yellow); color: var(--yellow); }
+  .badge-hard { border-color: var(--magenta); color: var(--magenta); }
+
+  .card-btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.6rem 1.2rem;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+  }
+
+  .card-btn:hover {
+    background: var(--accent);
+    color: var(--bg);
+    box-shadow: 0 0 20px var(--accent);
+  }
+
+  /* Per-card accent colors */
+  .card-godot { --accent: #00f5ff; --accent-rgb: 0,245,255; }
+  .card-panda { --accent: #00ff88; --accent-rgb: 0,255,136; }
+  .card-solar { --accent: #ffee00; --accent-rgb: 255,238,0; }
+  .card-stride { --accent: #ff00aa; --accent-rgb: 255,0,170; }
+
+  /* ── ARCADE GAME SECTION ── */
+  #arcade {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+  }
+
+  .arcade-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .arcade-wrapper { grid-template-columns: 1fr; }
+  }
+
+  .game-cabinet {
+    border: 2px solid var(--cyan);
+    box-shadow: var(--glow-cyan);
+    background: #000;
+    position: relative;
+  }
+
+  .cabinet-header {
+    background: var(--dim);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0,245,255,0.2);
+  }
+
+  .cabinet-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    color: var(--cyan);
+    letter-spacing: 0.1em;
+  }
+
+  .cabinet-status {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--green);
+    letter-spacing: 0.2em;
+  }
+
+  .cabinet-status::before {
+    content: '● ';
+    animation: blink 1s step-end infinite;
+  }
+
+  #game-canvas {
+    display: block;
+    width: 100%;
+    background: #000;
+  }
+
+  .cabinet-footer {
+    background: var(--dim);
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    border-top: 1px solid rgba(0,245,255,0.2);
+    flex-wrap: wrap;
+  }
+
+  .ctrl-hint {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .ctrl-key {
+    color: var(--cyan);
+    border: 1px solid rgba(0,245,255,0.4);
+    padding: 0 0.3rem;
+  }
+
+  /* ── SIDEBAR STATS ── */
+  .game-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .stat-block {
+    background: var(--card-bg);
+    border: 1px solid rgba(0,245,255,0.15);
+    padding: 1.5rem;
+  }
+
+  .stat-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cyan);
+    line-height: 1;
+  }
+
+  .stat-value.lives { color: var(--magenta); }
+  .stat-value.wave { color: var(--green); }
+
+  .leaderboard {
+    background: var(--card-bg);
+    border: 1px solid rgba(0,245,255,0.15);
+    padding: 1.5rem;
+  }
+
+  .lb-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    color: var(--cyan);
+    margin-bottom: 1rem;
+    letter-spacing: 0.1em;
+  }
+
+  .lb-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+  }
+
+  .lb-rank { color: var(--text-dim); width: 2rem; }
+  .lb-name { color: var(--text); flex: 1; }
+  .lb-score { color: var(--yellow); }
+
+  /* ── TERMINAL SECTION ── */
+  #terminal-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+  }
+
+  .terminal {
+    background: #000;
+    border: 1px solid rgba(0,255,136,0.3);
+    box-shadow: var(--glow-green);
+    overflow: hidden;
+  }
+
+  .terminal-bar {
+    background: #111;
+    padding: 0.6rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid rgba(0,255,136,0.2);
+  }
+
+  .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .t-dot.red { background: #ff5f56; }
+  .t-dot.yellow { background: #ffbd2e; }
+  .t-dot.green { background: #27c93f; }
+
+  .terminal-body {
+    padding: 1.5rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--green);
+  }
+
+  .t-prompt { color: var(--text-dim); }
+  .t-cmd { color: var(--cyan); }
+  .t-out { color: var(--text-dim); }
+  .t-file { color: var(--green); }
+  .t-comment { color: #444; }
+  .t-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1em;
+    background: var(--green);
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 2rem;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+  }
+
+  footer span { color: var(--magenta); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeSlideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ── DIVIDER ── */
+  .neon-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), var(--magenta), transparent);
+    opacity: 0.3;
+    margin: 0 auto;
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--card-bg);
+    border: 1px solid var(--accent, var(--cyan));
+    box-shadow: 0 0 40px rgba(0,245,255,0.2);
+    padding: 2.5rem;
+    max-width: 480px;
+    width: 90%;
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1.2rem;
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .modal-close:hover { color: #fff; }
+
+  .modal-engine-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-step {
+    background: rgba(0,0,0,0.4);
+    border-left: 3px solid var(--accent, var(--cyan));
+    padding: 0.8rem 1rem;
+    margin: 0.75rem 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .modal-step strong {
+    color: var(--accent, var(--cyan));
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .modal-link {
+    display: block;
+    text-align: center;
+    margin-top: 1.5rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent, var(--cyan));
+    border: 1px solid var(--accent, var(--cyan));
+    padding: 0.6rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .modal-link:hover {
+    background: var(--accent, var(--cyan));
+    color: var(--bg);
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">ENGINE<span>.</span>LAB</div>
+  <ul class="nav-links">
+    <li><a href="#engines">Engines</a></li>
+    <li><a href="#arcade">Arcade</a></li>
+    <li><a href="#setup">Setup</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div id="hero">
+  <canvas id="grid-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-tag">// game engine portfolio //</div>
+    <h1>
+      <span class="line1">THE</span>
+      <span class="line2">ENGINE LAB</span>
+    </h1>
+    <p class="hero-sub">Four engines. Multiple languages. One portfolio.</p>
+    <div class="hero-cta">
+      <a href="#engines" class="btn btn-cyan">Explore Engines</a>
+      <a href="#arcade" class="btn btn-magenta">Play Demo</a>
+    </div>
+  </div>
+  <div class="scroll-hint">▼ &nbsp; SCROLL &nbsp; ▼</div>
+</div>
+
+<div class="neon-divider"></div>
+
+<!-- ENGINES -->
+<section id="engines">
+  <div class="section-label">// 01 — stack</div>
+  <h2 class="section-title">Pick Your Engine</h2>
+  <p class="section-desc">Four engines across the difficulty spectrum. From Python-native to C# professional. Each one earns a line on the resume.</p>
+
+  <div class="engine-grid">
+    <!-- GODOT -->
+    <div class="engine-card card-godot" onclick="openModal('godot')">
+      <span class="card-icon">🎮</span>
+      <div class="card-name">Godot</div>
+      <p class="card-tagline">Open-source powerhouse. GDScript reads exactly like Python. A full 2D platformer in a weekend is realistic.</p>
+      <div class="badge-row">
+        <span class="badge badge-lang">GDScript</span>
+        <span class="badge badge-easy">Easy Entry</span>
+      </div>
+      <button class="card-btn">View Setup Guide →</button>
+    </div>
+
+    <!-- PANDA3D -->
+    <div class="engine-card card-panda" onclick="openModal('panda')">
+      <span class="card-icon">🐼</span>
+      <div class="card-name">Panda3D</div>
+      <p class="card-tagline">Literally Python. Write Python to build 3D scenes. A spinning model or basic scene demo proves immediate competency.</p>
+      <div class="badge-row">
+        <span class="badge badge-lang">Python</span>
+        <span class="badge badge-easy">Easy Entry</span>
+      </div>
+      <button class="card-btn">View Setup Guide →</button>
+    </div>
+
+    <!-- SOLAR2D -->
+    <div class="engine-card card-solar" onclick="openModal('solar')">
+      <span class="card-icon">☀️</span>
+      <div class="card-name">Solar2D</div>
+      <p class="card-tagline">Mobile-first 2D engine using Lua — a tiny language you can learn in hours. Build an endless runner or puzzle game.</p>
+      <div class="badge-row">
+        <span class="badge badge-lang">Lua</span>
+        <span class="badge badge-medium">Medium</span>
+      </div>
+      <button class="card-btn">View Setup Guide →</button>
+    </div>
+
+    <!-- STRIDE -->
+    <div class="engine-card card-stride" onclick="openModal('stride')">
+      <span class="card-icon">⚡</span>
+      <div class="card-name">Stride</div>
+      <p class="card-tagline">C# / .NET game engine. Closest to Java coursework. A basic 3D scene or FPS demo covers the "0–1 years" bracket.</p>
+      <div class="badge-row">
+        <span class="badge badge-lang">C#</span>
+        <span class="badge badge-medium">Medium</span>
+      </div>
+      <button class="card-btn">View Setup Guide →</button>
+    </div>
+  </div>
+</section>
+
+<div class="neon-divider"></div>
+
+<!-- ARCADE GAME -->
+<div id="arcade">
+  <div class="section-label">// 02 — live demo</div>
+  <h2 class="section-title">Arcade: Star Drift</h2>
+  <p class="section-desc" style="margin-bottom:2rem">A working space shooter built with raw JavaScript Canvas — the same game loop logic used in every engine above.</p>
+
+  <div class="arcade-wrapper">
+    <div class="game-cabinet">
+      <div class="cabinet-header">
+        <span class="cabinet-title">STAR DRIFT v1.0</span>
+        <span class="cabinet-status">LIVE</span>
+      </div>
+      <canvas id="game-canvas" width="600" height="450"></canvas>
+      <div class="cabinet-footer">
+        <span class="ctrl-hint"><span class="ctrl-key">↑↓←→</span> MOVE</span>
+        <span class="ctrl-hint"><span class="ctrl-key">SPACE</span> SHOOT</span>
+        <span class="ctrl-hint"><span class="ctrl-key">P</span> PAUSE</span>
+        <span class="ctrl-hint"><span class="ctrl-key">R</span> RESTART</span>
+      </div>
+    </div>
+
+    <div class="game-sidebar">
+      <div class="stat-block">
+        <div class="stat-label">Score</div>
+        <div class="stat-value" id="ui-score">0</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-label">Wave</div>
+        <div class="stat-value wave" id="ui-wave">1</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-label">Lives</div>
+        <div class="stat-value lives" id="ui-lives">♥ ♥ ♥</div>
+      </div>
+      <div class="leaderboard">
+        <div class="lb-title">// HIGH SCORES</div>
+        <div class="lb-row"><span class="lb-rank">#1</span><span class="lb-name">ACE</span><span class="lb-score">9400</span></div>
+        <div class="lb-row"><span class="lb-rank">#2</span><span class="lb-name">NVX</span><span class="lb-score">7200</span></div>
+        <div class="lb-row"><span class="lb-rank">#3</span><span class="lb-name">ZR0</span><span class="lb-score">5100</span></div>
+        <div class="lb-row"><span class="lb-rank">#4</span><span class="lb-name">YOU</span><span class="lb-score" id="ui-best">---</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="neon-divider"></div>
+
+<!-- TERMINAL SETUP -->
+<div id="terminal-section" id="setup">
+  <div class="section-label">// 03 — quickstart</div>
+  <h2 class="section-title">Get Running Fast</h2>
+  <p class="section-desc" style="margin-bottom:2rem">Start with Godot + Panda3D. That covers two categories on the form with skills you already have.</p>
+
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="t-dot red"></div>
+      <div class="t-dot yellow"></div>
+      <div class="t-dot green"></div>
+    </div>
+    <div class="terminal-body">
+      <div><span class="t-prompt">~/GameEngineLab $ </span><span class="t-cmd">pip install Panda3D</span></div>
+      <div class="t-out">Successfully installed Panda3D-1.10.x</div>
+      <br>
+      <div><span class="t-prompt">~/GameEngineLab $ </span><span class="t-cmd">python demos/panda3d/spinning_scene.py</span></div>
+      <div class="t-out"><span class="t-file">★ Panda3D window opened — spinning 3D model loaded</span></div>
+      <br>
+      <div><span class="t-prompt">~/GameEngineLab $ </span><span class="t-cmd">godot --path demos/godot/ --export-release "HTML5" build/index.html</span></div>
+      <div class="t-out"><span class="t-file">★ Godot project exported to web — open in browser</span></div>
+      <br>
+      <div><span class="t-prompt">~/GameEngineLab $ </span><span class="t-cmd">python launcher.py</span></div>
+      <div class="t-out"><span class="t-file">★ Desktop launcher started — all demos accessible</span></div>
+      <br>
+      <div><span class="t-prompt">~/GameEngineLab $ </span><span class="t-cursor"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>THE ENGINE LAB &nbsp;·&nbsp; Built by <span>Angela Hudson</span> &nbsp;·&nbsp; 2026</p>
+  <p style="margin-top:0.5rem;font-size:0.6rem">Godot · Panda3D · Solar2D · Stride</p>
+</footer>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal-box">
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  HERO GRID / PARTICLE BACKGROUND
+// ═══════════════════════════════════════════════
+(function() {
+  const canvas = document.getElementById('grid-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], mouse = { x: -999, y: -999 };
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  function makeParticle() {
+    return {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      size: Math.random() * 1.5 + 0.5,
+      alpha: Math.random() * 0.6 + 0.1,
+    };
+  }
+
+  resize();
+  for (let i = 0; i < 120; i++) particles.push(makeParticle());
+
+  window.addEventListener('resize', () => { resize(); });
+  document.getElementById('hero').addEventListener('mousemove', e => {
+    const r = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - r.left;
+    mouse.y = e.clientY - r.top;
+  });
+
+  function drawGrid() {
+    ctx.strokeStyle = 'rgba(0,245,255,0.04)';
+    ctx.lineWidth = 1;
+    const step = 60;
+    for (let x = 0; x < W; x += step) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for (let y = 0; y < H; y += step) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+
+    // radial gradient vignette
+    const gr = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W*0.7);
+    gr.addColorStop(0, 'rgba(0,20,40,0.3)');
+    gr.addColorStop(1, 'rgba(0,0,0,0.6)');
+    ctx.fillStyle = gr;
+    ctx.fillRect(0, 0, W, H);
+
+    drawGrid();
+
+    // particles
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W;
+      if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H;
+      if (p.y > H) p.y = 0;
+
+      // mouse repel
+      const dx = p.x - mouse.x, dy = p.y - mouse.y;
+      const d = Math.sqrt(dx*dx+dy*dy);
+      if (d < 100) { p.x += dx/d*1.5; p.y += dy/d*1.5; }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(0,245,255,${p.alpha})`;
+      ctx.fill();
+    });
+
+    // connect nearby particles
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i+1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d = Math.sqrt(dx*dx+dy*dy);
+        if (d < 100) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(0,245,255,${0.12*(1-d/100)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  loop();
+})();
+
+
+// ═══════════════════════════════════════════════
+//  STAR DRIFT — SPACE SHOOTER
+// ═══════════════════════════════════════════════
+(function() {
+  const canvas = document.getElementById('game-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const uiScore = document.getElementById('ui-score');
+  const uiWave  = document.getElementById('ui-wave');
+  const uiLives = document.getElementById('ui-lives');
+  const uiBest  = document.getElementById('ui-best');
+
+  let state, player, bullets, enemies, particles, stars, score, wave, lives, bestScore, frameCount, spawnTimer, paused, waveMsg;
+
+  const COLORS = { cyan: '#00f5ff', magenta: '#ff00aa', green: '#00ff88', yellow: '#ffee00', red: '#ff3355' };
+
+  function initStars() {
+    stars = [];
+    for (let i = 0; i < 80; i++) {
+      stars.push({ x: Math.random()*W, y: Math.random()*H, speed: Math.random()*1.5+0.3, r: Math.random()*1.2+0.2 });
+    }
+  }
+
+  function resetGame() {
+    score = 0; wave = 1; lives = 3; frameCount = 0; spawnTimer = 0; paused = false;
+    waveMsg = { text: 'WAVE 1', timer: 120 };
+    player = { x: W/2, y: H-60, w: 18, h: 22, speed: 4, iframes: 0, shooting: false, shootTimer: 0 };
+    bullets = []; enemies = []; particles = [];
+    updateHUD();
+    state = 'playing';
+  }
+
+  function init() {
+    bestScore = 0;
+    state = 'start';
+    initStars();
+    resetGame();
+    state = 'start';
+  }
+
+  const keys = {};
+  window.addEventListener('keydown', e => {
+    keys[e.code] = true;
+    if (e.code === 'Space') { e.preventDefault(); keys.Space = true; }
+    if (e.code === 'KeyP' && state === 'playing') paused = !paused;
+    if (e.code === 'KeyR') { if (state === 'dead' || state === 'start') resetGame(); }
+    if (e.code === 'Space' && state === 'start') resetGame();
+    if (e.code === 'Space' && state === 'dead') resetGame();
+  });
+  window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+  // Focus the canvas section on click
+  canvas.addEventListener('click', () => {
+    if (state === 'start' || state === 'dead') resetGame();
+    canvas.focus();
+  });
+  canvas.setAttribute('tabindex', 0);
+
+  function updateHUD() {
+    uiScore.textContent = score;
+    uiWave.textContent  = wave;
+    uiLives.textContent = '♥ '.repeat(lives).trim() || '—';
+    if (bestScore > 0) uiBest.textContent = bestScore;
+  }
+
+  function spawnEnemy() {
+    const types = ['scout', 'fighter', wave >= 3 ? 'bomber' : 'scout'];
+    const t = types[Math.floor(Math.random()*types.length)];
+    const x = Math.random() * (W - 40) + 20;
+    let e = { x, y: -20, type: t, iframes: 0 };
+    if (t === 'scout')   { e.w=14; e.h=14; e.hp=1; e.speed=1.5+wave*0.2; e.color=COLORS.cyan;    e.pts=100; }
+    if (t === 'fighter') { e.w=18; e.h=16; e.hp=2; e.speed=1.2+wave*0.15; e.color=COLORS.magenta; e.pts=200; e.shootTimer=0; e.shootRate=90-wave*5; }
+    if (t === 'bomber')  { e.w=22; e.h=20; e.hp=4; e.speed=0.8+wave*0.1; e.color=COLORS.yellow;  e.pts=400; }
+    enemies.push(e);
+  }
+
+  function spawnParticles(x, y, color, count) {
+    for (let i = 0; i < count; i++) {
+      const a = Math.random()*Math.PI*2;
+      const spd = Math.random()*3+1;
+      particles.push({ x, y, vx: Math.cos(a)*spd, vy: Math.sin(a)*spd, life: 30+Math.random()*20, color });
+    }
+  }
+
+  function drawShip(x, y, w, h, color, isPlayer) {
+    ctx.save();
+    ctx.translate(x, y);
+    if (!isPlayer) ctx.rotate(Math.PI);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.moveTo(0, -h/2);
+    ctx.lineTo(-w/2, h/2);
+    ctx.lineTo(-w/4, h/3);
+    ctx.lineTo(0, h/2);
+    ctx.lineTo(w/4, h/3);
+    ctx.lineTo(w/2, h/2);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fillStyle = color + '22';
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawBullet(b) {
+    ctx.save();
+    ctx.shadowColor = b.color;
+    ctx.shadowBlur = 10;
+    ctx.fillStyle = b.color;
+    ctx.fillRect(b.x-2, b.y-6, 4, 12);
+    ctx.restore();
+  }
+
+  function rect_hit(ax, ay, aw, ah, bx, by, bw, bh) {
+    return ax < bx+bw && ax+aw > bx && ay < by+bh && ay+ah > by;
+  }
+
+  function update() {
+    frameCount++;
+
+    // stars
+    stars.forEach(s => { s.y += s.speed; if (s.y > H) { s.y = 0; s.x = Math.random()*W; } });
+
+    if (state !== 'playing' || paused) return;
+
+    // wave message
+    if (waveMsg.timer > 0) waveMsg.timer--;
+
+    // player move
+    const spd = player.speed;
+    if ((keys.ArrowLeft  || keys.KeyA) && player.x > player.w/2)      player.x -= spd;
+    if ((keys.ArrowRight || keys.KeyD) && player.x < W - player.w/2)  player.x += spd;
+    if ((keys.ArrowUp    || keys.KeyW) && player.y > H/2)             player.y -= spd;
+    if ((keys.ArrowDown  || keys.KeyS) && player.y < H - player.h/2)  player.y += spd;
+
+    // player shoot
+    player.shootTimer = Math.max(0, player.shootTimer - 1);
+    if (keys.Space && player.shootTimer === 0) {
+      bullets.push({ x: player.x, y: player.y - player.h/2, vy: -9, color: COLORS.cyan, fromPlayer: true });
+      player.shootTimer = 14;
+    }
+
+    // iframes
+    if (player.iframes > 0) player.iframes--;
+
+    // spawn enemies
+    const spawnRate = Math.max(30, 90 - wave * 8);
+    spawnTimer++;
+    if (spawnTimer >= spawnRate) { spawnEnemy(); spawnTimer = 0; }
+
+    // update enemies
+    enemies.forEach(e => {
+      e.y += e.speed;
+      e.x += Math.sin(frameCount * 0.02 + e.x) * 0.5;
+      if (e.iframes > 0) e.iframes--;
+
+      // fighter shoots down
+      if (e.type === 'fighter') {
+        e.shootTimer = (e.shootTimer || 0) + 1;
+        const rate = e.shootRate || 80;
+        if (e.shootTimer >= rate) {
+          bullets.push({ x: e.x, y: e.y+e.h/2, vy: 4+wave*0.3, color: COLORS.magenta, fromPlayer: false });
+          e.shootTimer = 0;
+        }
+      }
+
+      // hit player
+      if (player.iframes === 0 && rect_hit(e.x-e.w/2, e.y-e.h/2, e.w, e.h, player.x-player.w/2, player.y-player.h/2, player.w, player.h)) {
+        spawnParticles(player.x, player.y, COLORS.cyan, 12);
+        lives--;
+        player.iframes = 90;
+        updateHUD();
+        if (lives <= 0) { state = 'dead'; if (score > bestScore) { bestScore = score; uiBest.textContent = bestScore; } }
+      }
+    });
+
+    // update bullets
+    bullets.forEach(b => { b.y += b.vy; });
+
+    // bullet vs enemy
+    bullets.filter(b => b.fromPlayer).forEach(b => {
+      enemies.forEach(e => {
+        if (!e._dead && rect_hit(b.x-2, b.y-6, 4, 12, e.x-e.w/2, e.y-e.h/2, e.w, e.h)) {
+          b._dead = true;
+          e.hp--;
+          spawnParticles(b.x, b.y, e.color, 4);
+          if (e.hp <= 0) {
+            e._dead = true;
+            score += e.pts * wave;
+            spawnParticles(e.x, e.y, e.color, 10);
+            updateHUD();
+          }
+        }
+      });
+    });
+
+    // bullet vs player
+    bullets.filter(b => !b.fromPlayer).forEach(b => {
+      if (player.iframes === 0 && rect_hit(b.x-2, b.y-6, 4, 12, player.x-player.w/2, player.y-player.h/2, player.w, player.h)) {
+        b._dead = true;
+        spawnParticles(player.x, player.y, COLORS.magenta, 8);
+        lives--;
+        player.iframes = 90;
+        updateHUD();
+        if (lives <= 0) { state = 'dead'; if (score > bestScore) { bestScore = score; uiBest.textContent = bestScore; } }
+      }
+    });
+
+    // cull
+    bullets  = bullets.filter(b => !b._dead && b.y > -20 && b.y < H+20);
+    enemies  = enemies.filter(e => !e._dead && e.y < H+40);
+
+    // particles
+    particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.vx *= 0.95; p.vy *= 0.95; p.life--; });
+    particles = particles.filter(p => p.life > 0);
+
+    // advance wave
+    if (frameCount > 0 && frameCount % (600 - wave*20 < 200 ? 200 : 600 - wave*20) === 0) {
+      wave++;
+      waveMsg = { text: `WAVE ${wave}`, timer: 120 };
+      updateHUD();
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H);
+
+    // stars
+    stars.forEach(s => {
+      ctx.fillStyle = `rgba(255,255,255,${0.2+s.speed*0.2})`;
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
+    });
+
+    if (state === 'start') {
+      drawText('STAR DRIFT', W/2, H/2-40, '900 28px Orbitron', COLORS.cyan, true);
+      drawText('CLICK OR PRESS SPACE TO START', W/2, H/2+10, '14px "Share Tech Mono"', COLORS.magenta, false);
+      drawText('ARROWS/WASD MOVE  ·  SPACE SHOOT', W/2, H/2+40, '11px "Share Tech Mono"', '#555', false);
+      return;
+    }
+
+    // particles
+    particles.forEach(p => {
+      ctx.save();
+      ctx.globalAlpha = p.life / 50;
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 4;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+    });
+
+    // enemy bullets
+    bullets.filter(b => !b.fromPlayer).forEach(drawBullet);
+
+    // enemies
+    enemies.forEach(e => {
+      ctx.globalAlpha = e.iframes > 0 ? 0.4 : 1;
+      drawShip(e.x, e.y, e.w, e.h, e.color, false);
+      ctx.globalAlpha = 1;
+    });
+
+    // player
+    if (state === 'playing' || state === 'dead') {
+      ctx.globalAlpha = player.iframes > 0 && frameCount % 8 < 4 ? 0.3 : 1;
+      drawShip(player.x, player.y, player.w, player.h, COLORS.cyan, true);
+      ctx.globalAlpha = 1;
+    }
+
+    // player bullets
+    bullets.filter(b => b.fromPlayer).forEach(drawBullet);
+
+    // wave message
+    if (waveMsg && waveMsg.timer > 0) {
+      const a = waveMsg.timer > 30 ? 1 : waveMsg.timer/30;
+      ctx.save();
+      ctx.globalAlpha = a;
+      drawText(waveMsg.text, W/2, H/2, '700 36px Orbitron', COLORS.green, true);
+      ctx.restore();
+    }
+
+    // paused
+    if (paused) {
+      ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(0,0,W,H);
+      drawText('PAUSED', W/2, H/2-10, '700 32px Orbitron', COLORS.yellow, true);
+      drawText('PRESS P TO RESUME', W/2, H/2+30, '13px "Share Tech Mono"', '#666', false);
+    }
+
+    // game over
+    if (state === 'dead') {
+      ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(0,0,W,H);
+      drawText('GAME OVER', W/2, H/2-50, '900 34px Orbitron', COLORS.red, true);
+      drawText(`SCORE: ${score}`, W/2, H/2, '700 20px Orbitron', COLORS.yellow, false);
+      drawText('PRESS R OR CLICK TO RESTART', W/2, H/2+44, '12px "Share Tech Mono"', COLORS.cyan, false);
+    }
+  }
+
+  function drawText(text, x, y, font, color, glow) {
+    ctx.save();
+    ctx.font = font;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = color;
+    if (glow) { ctx.shadowColor = color; ctx.shadowBlur = 18; }
+    ctx.fillText(text, x, y);
+    ctx.restore();
+  }
+
+  function loop() {
+    update();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  init();
+  loop();
+})();
+
+
+// ═══════════════════════════════════════════════
+//  MODALS
+// ═══════════════════════════════════════════════
+const MODAL_DATA = {
+  godot: {
+    name: 'Godot Engine',
+    accent: '#00f5ff',
+    steps: [
+      { title: 'Install', body: 'Download Godot 4.x from godotengine.org — no installer needed, just unzip and run.' },
+      { title: 'First Project', body: 'New Project → 2D → Create. Add a Node2D, attach a GDScript. GDScript reads exactly like Python you already know.' },
+      { title: 'Export to Web', body: 'Project → Export → Add HTML5 preset. One click produces a playable browser build you can host on GitHub Pages.' },
+      { title: 'Resume Line', body: '"Built a 2D platformer in Godot 4 using GDScript; exported to HTML5 for browser play." — covers 0–1 years.' },
+    ],
+    link: 'https://godotengine.org'
+  },
+  panda: {
+    name: 'Panda3D',
+    accent: '#00ff88',
+    steps: [
+      { title: 'Install', body: 'pip install Panda3D — that\'s it. Runs in your existing Python environment.' },
+      { title: 'First Scene', body: 'loader.loadModel("panda") + render call. A textured, lit 3D model spins on screen in ~10 lines of Python.' },
+      { title: 'Game Loop', body: 'taskMgr.add() is Panda\'s update loop — same concept as every other engine. Add keyboard input, camera orbit, simple collision.' },
+      { title: 'Resume Line', body: '"Built a 3D interactive scene in Panda3D (Python); implemented camera controls and basic collision." — covers 0–1 years.' },
+    ],
+    link: 'https://www.panda3d.org'
+  },
+  solar: {
+    name: 'Solar2D',
+    accent: '#ffee00',
+    steps: [
+      { title: 'Install', body: 'Download Solar2D simulator from solar2d.com. Lua is a tiny language — the whole syntax fits on one page.' },
+      { title: 'First Scene', body: 'display.newRect() and physics.addBody() in main.lua. Gravity, collision, and sprite animation in under 30 lines.' },
+      { title: 'Target', body: 'An endless runner or match-3 puzzle covers Solar2D and Defold in the same bracket on the form.' },
+      { title: 'Resume Line', body: '"Developed a 2D mobile-style game in Solar2D using Lua; implemented physics and sprite animation." — covers 0–1 years.' },
+    ],
+    link: 'https://solar2d.com'
+  },
+  stride: {
+    name: 'Stride (Xenko)',
+    accent: '#ff00aa',
+    steps: [
+      { title: 'Install', body: 'Download Stride from stride3d.net. Requires .NET SDK (free). C# is close to Java — the syntax transfer is quick.' },
+      { title: 'First Scene', body: 'Use the visual editor to place a 3D object, attach a C# Script Component. Move transforms in Update() loop.' },
+      { title: 'Target', body: 'A simple 3D scene with a moving camera and lit objects is enough. An FPS character controller is a stretch goal.' },
+      { title: 'Resume Line', body: '"Built a 3D scene in Stride Engine using C#; implemented scripted movement and lighting." — covers 0–1 years.' },
+    ],
+    link: 'https://stride3d.net'
+  }
+};
+
+function openModal(key) {
+  const d = MODAL_DATA[key];
+  const box = document.getElementById('modal-box');
+  box.style.setProperty('--accent', d.accent);
+  box.style.borderColor = d.accent;
+  box.style.boxShadow = `0 0 40px ${d.accent}33`;
+
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-engine-name">${d.name}</div>
+    ${d.steps.map(s => `<div class="modal-step"><strong>${s.title}</strong>${s.body}</div>`).join('')}
+    <a class="modal-link" href="${d.link}" target="_blank" rel="noopener">→ Official Site</a>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+}
+
+function closeModalDirect() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+</script>
+
+</body>
+</html>
