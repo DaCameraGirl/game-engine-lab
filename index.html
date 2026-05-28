@@ -990,8 +990,8 @@
 
   const keys = {};
   window.addEventListener('keydown', e => {
+    if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code)) e.preventDefault();
     keys[e.code] = true;
-    if (e.code === 'Space') { e.preventDefault(); keys.Space = true; }
     if (e.code === 'KeyP' && state === 'playing') paused = !paused;
     if (e.code === 'KeyR') { if (state === 'dead' || state === 'start') resetGame(); }
     if (e.code === 'Space' && state === 'start') resetGame();
