@@ -30,7 +30,7 @@ The live GitHub Pages site includes a playable browser arcade, while the repo al
 
 | Engine | Language | Demo Style |
 | --- | --- | --- |
-| 💎 **Godot** | **GDScript** | 2D platformer logic |
+| 💎 **Godot 4** | **GDScript** | 2D platformer logic |
 | 🐼 **Panda3D** | **Python** | 3D scene and camera demo |
 | ☀️ **Solar2D** | **Lua** | Mobile-style endless runner |
 | ⚡ **Stride** | **C#** | 3D entity script demo |
@@ -47,7 +47,7 @@ The browser arcade runs directly on GitHub Pages with **HTML, CSS, and JavaScrip
 
 | Mode | Inspired By | Gameplay |
 | --- | --- | --- |
-| 💎 **Skyhook Grove** | **Godot** | Neon platforming, jumps, collectibles, enemy patrols, spikes, and locked exit gates |
+| 💎 **Skyhook Grove** | **Godot 4** | Neon platforming, jumps, collectibles, enemy patrols, spikes, and locked exit gates |
 | 🐼 **Orbit Relic** | **Panda3D** | Faux-3D relic scanning, orbit rings, collectible shards, sentries, and depth movement |
 | ☀️ **Comet Courier** | **Solar2D** | Fast runner action with double jumps, ducking, gems, shields, and rising speed |
 | ⚡ **Neon Mech Arena** | **Stride** | Arena shooting, enemy waves, pointer aiming, projectiles, and heat management |
@@ -67,7 +67,7 @@ The browser arcade runs directly on GitHub Pages with **HTML, CSS, and JavaScrip
 
 ## 🧪 Native Engine Demos
 
-### 💎 Godot / GDScript
+### 💎 Godot 4 / GDScript
 
 📁 `demos/godot/`
 
@@ -140,7 +140,7 @@ python launcher.py
 | 🌐 **HTML** | `index.html` | GitHub Pages layout, engine cards, arcade shell, setup panels |
 | 🎨 **CSS** | embedded in `index.html` | Neon styling, responsive layout, arcade cabinet, modals, glow effects |
 | 🟨 **JavaScript** | `arcade.js`, inline page script | Four playable browser games, Canvas rendering, input, physics, collisions, scoring |
-| 💎 **GDScript** | `demos/godot/` | Godot platformer demo logic |
+| 💎 **GDScript** | `demos/godot/` | Godot 4 platformer demo logic |
 | 🐍 **Python** | `launcher.py`, `demos/panda3d/` | Desktop launcher and Panda3D scene demo |
 | 🌙 **Lua** | `demos/solar2d/` | Solar2D mobile runner demo |
 | 💠 **C#** | `demos/stride/` | Stride entity behavior script |
@@ -156,7 +156,7 @@ python launcher.py
 ├── arcade.js               # Four playable browser arcade modes
 ├── launcher.py             # Python desktop launcher
 ├── demos/
-│   ├── godot/              # Godot / GDScript platformer demo
+│   ├── godot/              # Godot 4 / GDScript platformer demo
 │   ├── panda3d/            # Panda3D / Python scene demo
 │   ├── solar2d/            # Solar2D / Lua runner demo
 │   └── stride/             # Stride / C# script demo

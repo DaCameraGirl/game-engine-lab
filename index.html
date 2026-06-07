@@ -753,14 +753,14 @@
 <section id="engines">
   <div class="section-label">// 01 — stack</div>
   <h2 class="section-title">Pick Your Engine</h2>
-  <p class="section-desc">Four engines across the difficulty spectrum. Each one has a matching game idea, source demo, and a playable browser arcade mode below.</p>
+  <p class="section-desc">Four engines, four languages, and four playable game directions. Each card maps to a source demo and a browser arcade mode below.</p>
 
   <div class="engine-grid">
     <!-- GODOT -->
     <div class="engine-card card-godot" onclick="openModal('godot')">
       <span class="card-icon">🎮</span>
-      <div class="card-name">Godot</div>
-      <p class="card-tagline">Open-source powerhouse for 2D and 3D games. This lab pairs it with a neon platformer and collectible-gate loop.</p>
+      <div class="card-name">Godot 4</div>
+      <p class="card-tagline">Open-source 2D and 3D engine. This lab pairs Godot 4 with a neon platformer, collectible gates, and GDScript game logic.</p>
       <div class="badge-row">
         <span class="badge badge-lang">GDScript</span>
         <span class="badge badge-easy">Easy Entry</span>
@@ -1341,13 +1341,13 @@
 // ═══════════════════════════════════════════════
 const MODAL_DATA = {
   godot: {
-    name: 'Godot Engine',
+    name: 'Godot 4',
     accent: '#00f5ff',
     steps: [
       { title: 'Install', body: 'Download Godot 4.x from godotengine.org — no installer needed, just unzip and run.' },
       { title: 'First Project', body: 'New Project → 2D → Create. Add a Node2D, attach a GDScript. GDScript reads exactly like Python you already know.' },
       { title: 'Export to Web', body: 'Project → Export → Add HTML5 preset. One click produces a playable browser build you can host on GitHub Pages.' },
-      { title: 'Game Target', body: 'Build a 2D platformer with moving platforms, collectibles, enemy patrols, and an exportable HTML5 build.' },
+      { title: 'Playable Build', body: 'Build a 2D platformer with moving platforms, collectibles, enemy patrols, and an exportable HTML5 build.' },
     ],
     link: 'https://godotengine.org'
   },
@@ -1358,7 +1358,7 @@ const MODAL_DATA = {
       { title: 'Install', body: 'pip install Panda3D — that\'s it. Runs in your existing Python environment.' },
       { title: 'First Scene', body: 'loader.loadModel("panda") + render call. A textured, lit 3D model spins on screen in ~10 lines of Python.' },
       { title: 'Game Loop', body: 'taskMgr.add() is Panda\'s update loop — same concept as every other engine. Add keyboard input, camera orbit, simple collision.' },
-      { title: 'Game Target', body: 'Build an interactive 3D relic hunt with camera orbit, scan pulses, collectible shards, and basic collision.' },
+      { title: 'Playable Build', body: 'Build an interactive 3D relic hunt with camera orbit, scan pulses, collectible shards, and basic collision.' },
     ],
     link: 'https://www.panda3d.org'
   },
@@ -1368,8 +1368,8 @@ const MODAL_DATA = {
     steps: [
       { title: 'Install', body: 'Download Solar2D simulator from solar2d.com. Lua is a tiny language — the whole syntax fits on one page.' },
       { title: 'First Scene', body: 'display.newRect() and physics.addBody() in main.lua. Gravity, collision, and sprite animation in under 30 lines.' },
-      { title: 'Game Target', body: 'Build a mobile-style runner with physics jumps, obstacle timing, pickups, shields, and restartable score runs.' },
-      { title: 'Polish Pass', body: 'Add particle bursts, difficulty ramping, and touch-friendly controls so it feels like a real mobile prototype.' },
+      { title: 'Playable Build', body: 'Build a mobile-style runner with physics jumps, obstacle timing, pickups, shields, and restartable score runs.' },
+      { title: 'Arcade Polish', body: 'Add particle bursts, difficulty ramping, and touch-friendly controls so it feels like a real mobile prototype.' },
     ],
     link: 'https://solar2d.com'
   },
@@ -1379,8 +1379,8 @@ const MODAL_DATA = {
     steps: [
       { title: 'Install', body: 'Download Stride from stride3d.net. Requires .NET SDK (free). C# is close to Java — the syntax transfer is quick.' },
       { title: 'First Scene', body: 'Use the visual editor to place a 3D object, attach a C# Script Component. Move transforms in Update() loop.' },
-      { title: 'Game Target', body: 'Build a C# arena prototype with scripted movement, enemy waves, projectiles, lighting, and heat or cooldown systems.' },
-      { title: 'Polish Pass', body: 'Use Stride components for camera follow, emissive materials, and gameplay scripts that can be tuned in the editor.' },
+      { title: 'Playable Build', body: 'Build a C# arena prototype with scripted movement, enemy waves, projectiles, lighting, and heat or cooldown systems.' },
+      { title: 'Arcade Polish', body: 'Use Stride components for camera follow, emissive materials, and gameplay scripts that can be tuned in the editor.' },
     ],
     link: 'https://stride3d.net'
   }
