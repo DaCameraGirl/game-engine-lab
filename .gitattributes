@@ -1,9 +1,9 @@
 # Keep the engine demo folders visible in GitHub's language meter.
-arcade.js linguist-language=JavaScript linguist-vendored=false
-index.html linguist-language=HTML linguist-vendored=false
-launcher.py linguist-language=Python linguist-vendored=false
+arcade.js linguist-language=JavaScript -linguist-vendored -linguist-documentation linguist-detectable
+index.html linguist-language=HTML -linguist-vendored -linguist-documentation linguist-detectable
+launcher.py linguist-language=Python -linguist-vendored -linguist-documentation linguist-detectable
 
-demos/godot/*.gd linguist-language=GDScript linguist-vendored=false
-demos/panda3d/*.py linguist-language=Python linguist-vendored=false
-demos/solar2d/*.lua linguist-language=Lua linguist-vendored=false
-demos/stride/*.cs linguist-language=C# linguist-vendored=false
+demos/godot/*.gd linguist-language=GDScript -linguist-vendored -linguist-documentation linguist-detectable
+demos/panda3d/*.py linguist-language=Python -linguist-vendored -linguist-documentation linguist-detectable
+demos/solar2d/*.lua linguist-language=Lua -linguist-vendored -linguist-documentation linguist-detectable
+demos/stride/*.cs linguist-language=C# -linguist-vendored -linguist-documentation linguist-detectable
