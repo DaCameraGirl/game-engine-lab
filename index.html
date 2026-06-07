@@ -428,6 +428,60 @@
     padding: 0 0.3rem;
   }
 
+  .arcade-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+    padding: 1rem 1rem 0;
+  }
+
+  .arcade-tab {
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(15,15,28,0.92);
+    color: var(--text-dim);
+    padding: 0.75rem 0.45rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .arcade-tab:hover,
+  .arcade-tab.active {
+    color: var(--bg);
+    background: var(--mode-accent, var(--cyan));
+    border-color: var(--mode-accent, var(--cyan));
+    box-shadow: 0 0 18px rgba(0,245,255,0.25);
+  }
+
+  .game-summary {
+    background: var(--card-bg);
+    border: 1px solid rgba(0,245,255,0.15);
+    padding: 1.25rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .summary-title {
+    font-family: 'Orbitron', monospace;
+    color: var(--cyan);
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.6rem;
+  }
+
+  .summary-copy {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 720px) {
+    .arcade-tabs { grid-template-columns: repeat(2, 1fr); }
+  }
+
   /* ── SIDEBAR STATS ── */
   .game-sidebar {
     display: flex;
@@ -699,14 +753,14 @@
 <section id="engines">
   <div class="section-label">// 01 — stack</div>
   <h2 class="section-title">Pick Your Engine</h2>
-  <p class="section-desc">Four engines across the difficulty spectrum. From Python-native to C# professional. Each one earns a line on the resume.</p>
+  <p class="section-desc">Four engines across the difficulty spectrum. Each one has a matching game idea, source demo, and a playable browser arcade mode below.</p>
 
   <div class="engine-grid">
     <!-- GODOT -->
     <div class="engine-card card-godot" onclick="openModal('godot')">
       <span class="card-icon">🎮</span>
       <div class="card-name">Godot</div>
-      <p class="card-tagline">Open-source powerhouse. GDScript reads exactly like Python. A full 2D platformer in a weekend is realistic.</p>
+      <p class="card-tagline">Open-source powerhouse for 2D and 3D games. This lab pairs it with a neon platformer and collectible-gate loop.</p>
       <div class="badge-row">
         <span class="badge badge-lang">GDScript</span>
         <span class="badge badge-easy">Easy Entry</span>
@@ -718,7 +772,7 @@
     <div class="engine-card card-panda" onclick="openModal('panda')">
       <span class="card-icon">🐼</span>
       <div class="card-name">Panda3D</div>
-      <p class="card-tagline">Literally Python. Write Python to build 3D scenes. A spinning model or basic scene demo proves immediate competency.</p>
+      <p class="card-tagline">Python-native 3D engine. This lab pairs it with orbit movement, scan pulses, relic shards, and sentry hazards.</p>
       <div class="badge-row">
         <span class="badge badge-lang">Python</span>
         <span class="badge badge-easy">Easy Entry</span>
@@ -730,7 +784,7 @@
     <div class="engine-card card-solar" onclick="openModal('solar')">
       <span class="card-icon">☀️</span>
       <div class="card-name">Solar2D</div>
-      <p class="card-tagline">Mobile-first 2D engine using Lua — a tiny language you can learn in hours. Build an endless runner or puzzle game.</p>
+      <p class="card-tagline">Mobile-first 2D engine using Lua. This lab pairs it with a fast runner, double jumps, shields, gems, and obstacles.</p>
       <div class="badge-row">
         <span class="badge badge-lang">Lua</span>
         <span class="badge badge-medium">Medium</span>
@@ -742,7 +796,7 @@
     <div class="engine-card card-stride" onclick="openModal('stride')">
       <span class="card-icon">⚡</span>
       <div class="card-name">Stride</div>
-      <p class="card-tagline">C# / .NET game engine. Closest to Java coursework. A basic 3D scene or FPS demo covers the "0–1 years" bracket.</p>
+      <p class="card-tagline">C# / .NET game engine for serious 3D workflows. This lab pairs it with a mech arena shooter and heat management.</p>
       <div class="badge-row">
         <span class="badge badge-lang">C#</span>
         <span class="badge badge-medium">Medium</span>
@@ -756,20 +810,27 @@
 
 <!-- ARCADE GAME -->
 <div id="arcade">
-  <div class="section-label">// 02 — live demo</div>
-  <h2 class="section-title">Arcade: Star Drift</h2>
-  <p class="section-desc" style="margin-bottom:2rem">A working space shooter built with raw JavaScript Canvas — the same game loop logic used in every engine above.</p>
+  <div class="section-label">// 02 — engine arcade</div>
+  <h2 class="section-title">Four Engine-Inspired Games</h2>
+  <p class="section-desc" style="margin-bottom:2rem">Pick an engine lane and play a different mini-game built around that engine's strengths: platforming, 3D-style scanning, mobile physics, and C# arena combat.</p>
 
   <div class="arcade-wrapper">
     <div class="game-cabinet">
       <div class="cabinet-header">
-        <span class="cabinet-title">STAR DRIFT v1.0</span>
+        <span class="cabinet-title" id="game-mode-title">GODOT: SKYHOOK GROVE</span>
         <span class="cabinet-status">LIVE</span>
+      </div>
+      <div class="arcade-tabs" role="group" aria-label="Choose engine game">
+        <button class="arcade-tab active" type="button" data-mode="godot">Godot</button>
+        <button class="arcade-tab" type="button" data-mode="panda">Panda3D</button>
+        <button class="arcade-tab" type="button" data-mode="solar">Solar2D</button>
+        <button class="arcade-tab" type="button" data-mode="stride">Stride</button>
       </div>
       <canvas id="game-canvas" width="600" height="450"></canvas>
       <div class="cabinet-footer">
-        <span class="ctrl-hint"><span class="ctrl-key">↑↓←→</span> MOVE</span>
-        <span class="ctrl-hint"><span class="ctrl-key">SPACE</span> SHOOT</span>
+        <span class="ctrl-hint"><span class="ctrl-key">1-4</span> SWITCH</span>
+        <span class="ctrl-hint"><span class="ctrl-key">WASD</span> MOVE</span>
+        <span class="ctrl-hint"><span class="ctrl-key">SPACE</span> ACTION</span>
         <span class="ctrl-hint"><span class="ctrl-key">P</span> PAUSE</span>
         <span class="ctrl-hint"><span class="ctrl-key">R</span> RESTART</span>
       </div>
@@ -789,11 +850,15 @@
         <div class="stat-value lives" id="ui-lives">♥ ♥ ♥</div>
       </div>
       <div class="leaderboard">
-        <div class="lb-title">// HIGH SCORES</div>
+        <div class="lb-title">// ENGINE BESTS</div>
         <div class="lb-row"><span class="lb-rank">#1</span><span class="lb-name">ACE</span><span class="lb-score">9400</span></div>
         <div class="lb-row"><span class="lb-rank">#2</span><span class="lb-name">NVX</span><span class="lb-score">7200</span></div>
         <div class="lb-row"><span class="lb-rank">#3</span><span class="lb-name">ZR0</span><span class="lb-score">5100</span></div>
         <div class="lb-row"><span class="lb-rank">#4</span><span class="lb-name">YOU</span><span class="lb-score" id="ui-best">---</span></div>
+      </div>
+      <div class="game-summary">
+        <div class="summary-title" id="ui-engine">Godot / GDScript</div>
+        <div class="summary-copy" id="ui-objective">Jump through a neon platform grove, collect cores, dodge patrols, and open the exit gate.</div>
       </div>
     </div>
   </div>
@@ -805,7 +870,7 @@
 <div id="terminal-section" id="setup">
   <div class="section-label">// 03 — quickstart</div>
   <h2 class="section-title">Get Running Fast</h2>
-  <p class="section-desc" style="margin-bottom:2rem">Start with Godot + Panda3D. That covers two categories on the form with skills you already have.</p>
+  <p class="section-desc" style="margin-bottom:2rem">Start with the browser arcade, then open the engine source demos locally when you want to run the native versions.</p>
 
   <div class="terminal">
     <div class="terminal-bar">
@@ -951,6 +1016,7 @@
 //  STAR DRIFT — SPACE SHOOTER
 // ═══════════════════════════════════════════════
 (function() {
+  return;
   const canvas = document.getElementById('game-canvas');
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
@@ -1281,7 +1347,7 @@ const MODAL_DATA = {
       { title: 'Install', body: 'Download Godot 4.x from godotengine.org — no installer needed, just unzip and run.' },
       { title: 'First Project', body: 'New Project → 2D → Create. Add a Node2D, attach a GDScript. GDScript reads exactly like Python you already know.' },
       { title: 'Export to Web', body: 'Project → Export → Add HTML5 preset. One click produces a playable browser build you can host on GitHub Pages.' },
-      { title: 'Resume Line', body: '"Built a 2D platformer in Godot 4 using GDScript; exported to HTML5 for browser play." — covers 0–1 years.' },
+      { title: 'Game Target', body: 'Build a 2D platformer with moving platforms, collectibles, enemy patrols, and an exportable HTML5 build.' },
     ],
     link: 'https://godotengine.org'
   },
@@ -1292,7 +1358,7 @@ const MODAL_DATA = {
       { title: 'Install', body: 'pip install Panda3D — that\'s it. Runs in your existing Python environment.' },
       { title: 'First Scene', body: 'loader.loadModel("panda") + render call. A textured, lit 3D model spins on screen in ~10 lines of Python.' },
       { title: 'Game Loop', body: 'taskMgr.add() is Panda\'s update loop — same concept as every other engine. Add keyboard input, camera orbit, simple collision.' },
-      { title: 'Resume Line', body: '"Built a 3D interactive scene in Panda3D (Python); implemented camera controls and basic collision." — covers 0–1 years.' },
+      { title: 'Game Target', body: 'Build an interactive 3D relic hunt with camera orbit, scan pulses, collectible shards, and basic collision.' },
     ],
     link: 'https://www.panda3d.org'
   },
@@ -1302,8 +1368,8 @@ const MODAL_DATA = {
     steps: [
       { title: 'Install', body: 'Download Solar2D simulator from solar2d.com. Lua is a tiny language — the whole syntax fits on one page.' },
       { title: 'First Scene', body: 'display.newRect() and physics.addBody() in main.lua. Gravity, collision, and sprite animation in under 30 lines.' },
-      { title: 'Target', body: 'An endless runner or match-3 puzzle covers Solar2D and Defold in the same bracket on the form.' },
-      { title: 'Resume Line', body: '"Developed a 2D mobile-style game in Solar2D using Lua; implemented physics and sprite animation." — covers 0–1 years.' },
+      { title: 'Game Target', body: 'Build a mobile-style runner with physics jumps, obstacle timing, pickups, shields, and restartable score runs.' },
+      { title: 'Polish Pass', body: 'Add particle bursts, difficulty ramping, and touch-friendly controls so it feels like a real mobile prototype.' },
     ],
     link: 'https://solar2d.com'
   },
@@ -1313,8 +1379,8 @@ const MODAL_DATA = {
     steps: [
       { title: 'Install', body: 'Download Stride from stride3d.net. Requires .NET SDK (free). C# is close to Java — the syntax transfer is quick.' },
       { title: 'First Scene', body: 'Use the visual editor to place a 3D object, attach a C# Script Component. Move transforms in Update() loop.' },
-      { title: 'Target', body: 'A simple 3D scene with a moving camera and lit objects is enough. An FPS character controller is a stretch goal.' },
-      { title: 'Resume Line', body: '"Built a 3D scene in Stride Engine using C#; implemented scripted movement and lighting." — covers 0–1 years.' },
+      { title: 'Game Target', body: 'Build a C# arena prototype with scripted movement, enemy waves, projectiles, lighting, and heat or cooldown systems.' },
+      { title: 'Polish Pass', body: 'Use Stride components for camera follow, emissive materials, and gameplay scripts that can be tuned in the editor.' },
     ],
     link: 'https://stride3d.net'
   }
@@ -1343,6 +1409,7 @@ function closeModalDirect() {
   document.getElementById('modal-overlay').classList.remove('open');
 }
 </script>
+<script src="arcade.js"></script>
 
 </body>
 </html>
