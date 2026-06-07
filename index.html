@@ -760,36 +760,36 @@
     <div class="engine-card card-godot" onclick="openModal('godot')">
       <span class="card-icon">🎮</span>
       <div class="card-name">Godot 4</div>
-      <p class="card-tagline">Open-source 2D and 3D engine. This lab pairs Godot 4 with a neon platformer, collectible gates, and GDScript game logic.</p>
+      <p class="card-tagline">Open-source 2D and 3D engine. This lab pairs Godot 4 with skyhook grappling, moving platforms, collectible gates, and GDScript game logic.</p>
       <div class="badge-row">
         <span class="badge badge-lang">GDScript</span>
         <span class="badge badge-easy">Easy Entry</span>
       </div>
-      <button class="card-btn">View Setup Guide →</button>
+      <button class="card-btn">Open Lab Guide →</button>
     </div>
 
     <!-- PANDA3D -->
     <div class="engine-card card-panda" onclick="openModal('panda')">
       <span class="card-icon">🐼</span>
       <div class="card-name">Panda3D</div>
-      <p class="card-tagline">Python-native 3D engine. This lab pairs it with orbit movement, scan pulses, relic shards, and sentry hazards.</p>
+      <p class="card-tagline">Python-native 3D engine. This lab pairs it with orbit movement, scan energy, relic shards, sentry shots, decoys, and a wormhole exit.</p>
       <div class="badge-row">
         <span class="badge badge-lang">Python</span>
         <span class="badge badge-easy">Easy Entry</span>
       </div>
-      <button class="card-btn">View Setup Guide →</button>
+      <button class="card-btn">Open Lab Guide →</button>
     </div>
 
     <!-- SOLAR2D -->
     <div class="engine-card card-solar" onclick="openModal('solar')">
       <span class="card-icon">☀️</span>
       <div class="card-name">Solar2D</div>
-      <p class="card-tagline">Mobile-first 2D engine using Lua. This lab pairs it with a fast runner, double jumps, shields, gems, and obstacles.</p>
+      <p class="card-tagline">Mobile-first 2D engine using Lua. This lab pairs it with a fast runner, combo chains, dash timing, shields, magnets, rings, and hazard gates.</p>
       <div class="badge-row">
         <span class="badge badge-lang">Lua</span>
         <span class="badge badge-medium">Medium</span>
       </div>
-      <button class="card-btn">View Setup Guide →</button>
+      <button class="card-btn">Open Lab Guide →</button>
     </div>
 
     <!-- STRIDE -->
@@ -801,7 +801,7 @@
         <span class="badge badge-lang">C#</span>
         <span class="badge badge-medium">Medium</span>
       </div>
-      <button class="card-btn">View Setup Guide →</button>
+      <button class="card-btn">Open Lab Guide →</button>
     </div>
   </div>
 </section>
@@ -812,7 +812,7 @@
 <div id="arcade">
   <div class="section-label">// 02 — engine arcade</div>
   <h2 class="section-title">Four Engine-Inspired Games</h2>
-  <p class="section-desc" style="margin-bottom:2rem">Pick an engine lane and play a different mini-game built around that engine's strengths: platforming, 3D-style scanning, mobile physics, and C# arena combat.</p>
+  <p class="section-desc" style="margin-bottom:2rem">Pick an engine lane and play a different arcade system built around that engine's strengths: grappling platforming, 3D-style scanning, mobile runner combos, and C# arena combat.</p>
 
   <div class="arcade-wrapper">
     <div class="game-cabinet">
@@ -1344,45 +1344,49 @@ const MODAL_DATA = {
     name: 'Godot 4',
     accent: '#00f5ff',
     steps: [
-      { title: 'Install', body: 'Download Godot 4.x from godotengine.org — no installer needed, just unzip and run.' },
+      { title: 'Run Native Demo', body: 'Open the included Godot 4 project if you want to inspect the native engine version. The browser arcade already runs here.' },
       { title: 'First Project', body: 'New Project → 2D → Create. Add a Node2D, attach a GDScript. GDScript reads exactly like Python you already know.' },
       { title: 'Export to Web', body: 'Project → Export → Add HTML5 preset. One click produces a playable browser build you can host on GitHub Pages.' },
-      { title: 'Playable Build', body: 'Build a 2D platformer with moving platforms, collectibles, enemy patrols, and an exportable HTML5 build.' },
+      { title: 'Playable Build', body: 'Build a 2D platformer with skyhook anchors, moving platforms, collectibles, enemy patrols, lasers, and an exportable HTML5 build.' },
     ],
-    link: 'https://godotengine.org'
+    link: 'https://github.com/DaCameraGirl/game-engine-lab/tree/master/demos/godot',
+    linkText: '→ View Godot Demo Source'
   },
   panda: {
     name: 'Panda3D',
     accent: '#00ff88',
     steps: [
-      { title: 'Install', body: 'pip install Panda3D — that\'s it. Runs in your existing Python environment.' },
+      { title: 'Run Native Demo', body: 'Use pip install Panda3D, then launch the included Python scene from this repo.' },
       { title: 'First Scene', body: 'loader.loadModel("panda") + render call. A textured, lit 3D model spins on screen in ~10 lines of Python.' },
       { title: 'Game Loop', body: 'taskMgr.add() is Panda\'s update loop — same concept as every other engine. Add keyboard input, camera orbit, simple collision.' },
-      { title: 'Playable Build', body: 'Build an interactive 3D relic hunt with camera orbit, scan pulses, collectible shards, and basic collision.' },
+      { title: 'Playable Build', body: 'Build an interactive 3D relic hunt with camera orbit, scan energy, collectible shards, decoy mines, sentry bolts, and a wormhole exit.' },
     ],
-    link: 'https://www.panda3d.org'
+    link: 'https://github.com/DaCameraGirl/game-engine-lab/blob/master/demos/panda3d/spinning_scene.py',
+    linkText: '→ View Panda3D Demo Source'
   },
   solar: {
     name: 'Solar2D',
     accent: '#ffee00',
     steps: [
-      { title: 'Install', body: 'Download Solar2D simulator from solar2d.com. Lua is a tiny language — the whole syntax fits on one page.' },
+      { title: 'Run Native Demo', body: 'Open the included Solar2D folder in the simulator to inspect the Lua runner source.' },
       { title: 'First Scene', body: 'display.newRect() and physics.addBody() in main.lua. Gravity, collision, and sprite animation in under 30 lines.' },
-      { title: 'Playable Build', body: 'Build a mobile-style runner with physics jumps, obstacle timing, pickups, shields, and restartable score runs.' },
-      { title: 'Arcade Polish', body: 'Add particle bursts, difficulty ramping, and touch-friendly controls so it feels like a real mobile prototype.' },
+      { title: 'Playable Build', body: 'Build a mobile-style runner with physics jumps, low gates, drones, rings, magnets, shield pickups, dash timing, and restartable score runs.' },
+      { title: 'Arcade Polish', body: 'Add particle bursts, combo scoring, difficulty ramping, and touch-friendly controls so it feels like a real mobile prototype.' },
     ],
-    link: 'https://solar2d.com'
+    link: 'https://github.com/DaCameraGirl/game-engine-lab/blob/master/demos/solar2d/main.lua',
+    linkText: '→ View Solar2D Demo Source'
   },
   stride: {
     name: 'Stride (Xenko)',
     accent: '#ff00aa',
     steps: [
-      { title: 'Install', body: 'Download Stride from stride3d.net. Requires .NET SDK (free). C# is close to Java — the syntax transfer is quick.' },
+      { title: 'Run Native Demo', body: 'Use the included C# script inside a Stride project to inspect the native component version.' },
       { title: 'First Scene', body: 'Use the visual editor to place a 3D object, attach a C# Script Component. Move transforms in Update() loop.' },
       { title: 'Playable Build', body: 'Build a C# arena prototype with scripted movement, enemy waves, projectiles, lighting, and heat or cooldown systems.' },
       { title: 'Arcade Polish', body: 'Use Stride components for camera follow, emissive materials, and gameplay scripts that can be tuned in the editor.' },
     ],
-    link: 'https://stride3d.net'
+    link: 'https://github.com/DaCameraGirl/game-engine-lab/blob/master/demos/stride/SpinningScene.cs',
+    linkText: '→ View Stride Demo Source'
   }
 };
 
@@ -1396,7 +1400,7 @@ function openModal(key) {
   document.getElementById('modal-content').innerHTML = `
     <div class="modal-engine-name">${d.name}</div>
     ${d.steps.map(s => `<div class="modal-step"><strong>${s.title}</strong>${s.body}</div>`).join('')}
-    <a class="modal-link" href="${d.link}" target="_blank" rel="noopener">→ Official Site</a>
+    <a class="modal-link" href="${d.link}" target="_blank" rel="noopener">${d.linkText}</a>
   `;
   document.getElementById('modal-overlay').classList.add('open');
 }

@@ -47,9 +47,9 @@ The browser arcade runs directly on GitHub Pages with **HTML, CSS, and JavaScrip
 
 | Mode | Inspired By | Gameplay |
 | --- | --- | --- |
-| 💎 **Skyhook Grove** | **Godot 4** | Neon platforming, jumps, collectibles, enemy patrols, spikes, and locked exit gates |
-| 🐼 **Orbit Relic** | **Panda3D** | Faux-3D relic scanning, orbit rings, collectible shards, sentries, and depth movement |
-| ☀️ **Comet Courier** | **Solar2D** | Fast runner action with double jumps, ducking, gems, shields, and rising speed |
+| 💎 **Skyhook Grove** | **Godot 4** | Skyhook grappling, moving platforms, collectible cores, lasers, drone fire, spikes, and locked exit gates |
+| 🐼 **Orbit Relic** | **Panda3D** | Faux-3D relic scanning, dash movement, scan energy, batteries, decoy mines, sentry bolts, and wormhole exits |
+| ☀️ **Comet Courier** | **Solar2D** | Fast runner action with double jumps, ducking, dash timing, rings, magnets, shields, combos, and rising speed |
 | ⚡ **Neon Mech Arena** | **Stride** | Arena shooting, enemy waves, pointer aiming, projectiles, and heat management |
 
 ### 🎮 Controls
@@ -58,7 +58,8 @@ The browser arcade runs directly on GitHub Pages with **HTML, CSS, and JavaScrip
 | --- | --- |
 | ⌨️ **WASD / Arrow Keys** | Move |
 | 🔥 **Space** | Jump, scan, shoot, or activate the current mode action |
-| 🖱️ **Mouse / Touch** | Aim or activate in supported modes |
+| 🖱️ **Mouse / Touch** | Grapple, dash, aim, or activate in supported modes |
+| ⚡ **Shift** | Dash in supported modes |
 | 🔢 **1 - 4** | Switch between engine arcade games |
 | ⏸️ **P** | Pause |
 | 🔁 **R** | Restart the active game |
@@ -178,6 +179,14 @@ This repo shows the same core game-development ideas across different tools:
 - 🕹️ engine-specific setup patterns
 
 It is built to be fun on the live page and useful as a reference for learning several game stacks.
+
+---
+
+## 🤝 Credits
+
+Built by **Angela Hudson**.
+
+Gameplay upgrade and implementation assistance: **OpenAI Codex**.
 
 ---
 
